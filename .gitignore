@@ -1,0 +1,14 @@
+venv/env/.env/sklearn-env/
+venv/
+data/raw/
+data/processed/
+data/train/
+data/validation/
+data/test/
+pycache/
+*.pyc
+.idea/
+.vscode/
+*.h5
+.DS_Store
+*.log

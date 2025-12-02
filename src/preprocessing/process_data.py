@@ -19,7 +19,7 @@ def parse_annotations():
     data = []
     xml_files = [f for f in os.listdir(RAW_ANNOTATIONS) if f.endswith('.xml')]
     
-    print(f"🔄 Procesez {len(xml_files)} fișiere XML...")
+    print(f"Procesare {len(xml_files)} fișiere XML...")
     
     for xml_file in xml_files:
         tree = ET.parse(os.path.join(RAW_ANNOTATIONS, xml_file))
@@ -55,9 +55,7 @@ def perform_eda(df):
     plt.xlabel('Clasă')
     plt.ylabel('Număr de imagini')
     plt.tight_layout()
-    plt.savefig(os.path.join(BASE_DIR, 'distributie_clase.png'))
-    print(f"📉 Graficul distribuției a fost salvat în {BASE_DIR}")
-    
+    plt.savefig(os.path.join(BASE_DIR, 'distributie_clase.png'))    
     return class_counts
 
 def save_and_split_data(df):
@@ -104,5 +102,3 @@ if __name__ == "__main__":
     df = parse_annotations()
     perform_eda(df)
     save_and_split_data(df)
-    
-    print("\nDatele sunt în folderul 'data/processed'.")
