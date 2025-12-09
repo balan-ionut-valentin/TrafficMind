@@ -1,4 +1,3 @@
-venv/env/.env/sklearn-env/
 venv/
 data/raw/
 data/processed/
