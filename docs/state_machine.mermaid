@@ -1,0 +1,29 @@
+stateDiagram-v2
+    [*] --> INIT_MODEL: Start App
+    INIT_MODEL --> INIT_CAMERA: Model Loaded
+    INIT_CAMERA --> CAPTURE_FRAME: Camera Ready
+    
+    state "Main Loop" as MainLoop {
+        CAPTURE_FRAME --> ROI_EXTRACTION: Frame Read OK
+        ROI_EXTRACTION --> PREPROCESS: ROI Valid
+        PREPROCESS --> INFERENCE: Input Tensor Ready
+        INFERENCE --> DISPLAY: Prediction Done
+        DISPLAY --> CAPTURE_FRAME: Next Frame
+        
+        CAPTURE_FRAME --> [*]: 'q' Pressed or Error
+    }
+    
+    note right of INIT_MODEL
+        Load .h5 model
+        Check file existence
+    end note
+    
+    note right of INFERENCE
+        model.predict()
+        Softmax Output
+    end note
+    
+    note right of DISPLAY
+        Draw Bounding Box
+        Color: Green (>70%) / Red
+    end note

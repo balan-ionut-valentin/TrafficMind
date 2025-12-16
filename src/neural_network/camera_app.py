@@ -3,11 +3,11 @@ import numpy as np
 import tensorflow as tf
 import os
 
-MODEL_PATH = "traffic_sign_model.h5"
+MODEL_PATH = "../../models/trained_model.h5"
 IMG_SIZE = (64, 64)
 
 # Lista în ordinea alfabetică a claselor
-CLASS_NAMES = ['Crosswalk','Speedlimit', 'Stop', 'Trafficlight']
+CLASS_NAMES = ['Crosswalk', 'NoEntry', 'PriorityRoad', 'Roundabout', 'Speedlimit', 'Stop', 'Trafficlight', 'Yield']
 
 def preprocess_frame(frame):
     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)

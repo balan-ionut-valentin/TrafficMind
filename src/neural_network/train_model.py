@@ -2,16 +2,26 @@ import os
 import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow.keras import layers, models
+from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, CSVLogger
 
 BASE_DIR = "../../data/processed"
 TRAIN_DIR = os.path.join(BASE_DIR, "train")
 VAL_DIR = os.path.join(BASE_DIR, "validation")
-MODEL_SAVE_PATH = "traffic_sign_model.h5"
+MODEL_SAVE_PATH = "../../models/trained_model.h5"
+RESULTS_DIR = "../../results"
+DOCS_DIR = "../../docs"
+
+os.makedirs(RESULTS_DIR, exist_ok=True)
+os.makedirs(DOCS_DIR, exist_ok=True)
+os.makedirs("../../models", exist_ok=True)
+os.makedirs(RESULTS_DIR, exist_ok=True)
+os.makedirs(DOCS_DIR, exist_ok=True)
+os.makedirs("../../models", exist_ok=True)
 
 # Parametrii Rețelei
 IMG_SIZE = (64, 64)
 BATCH_SIZE = 32
-EPOCHS = 15
+EPOCHS = 50 
 
 def load_datasets():
     """Încarcă datele direct din foldere folosind Keras."""
@@ -94,8 +104,11 @@ def plot_history(history):
     plt.legend(loc='upper right')
     plt.title('Eroare (Loss)')
     
-    plt.savefig('training_plot.png')
-    print("Graficele au fost salvate ca 'training_plot.png'")
+    # Salvare grafic cerut
+    loss_curve_path = os.path.join(DOCS_DIR, 'loss_curve.png')
+    plt.savefig(loss_curve_path)
+    print(f"Graficele au fost salvate ca '{loss_curve_path}'")
+    plt.close()
 
 if __name__ == "__main__":
     train_ds, val_ds, class_names = load_datasets()
@@ -106,11 +119,19 @@ if __name__ == "__main__":
     model = build_cnn_model(num_classes)
     model.summary()
     
+    # Definire callback-uri
+    callbacks = [
+        EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True, verbose=1),
+        ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=3, min_lr=0.00001, verbose=1),
+        CSVLogger(os.path.join(RESULTS_DIR, 'training_history.csv'))
+    ]
+
     print("\nÎncepe antrenarea modelului...")
     history = model.fit(
         train_ds,
         validation_data=val_ds,
-        epochs=EPOCHS
+        epochs=EPOCHS,
+        callbacks=callbacks
     )
     
     model.save(MODEL_SAVE_PATH)

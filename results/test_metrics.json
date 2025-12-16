@@ -1,0 +1,14 @@
+{
+    "test_accuracy": 0.953125,
+    "test_f1_macro": 0.9224192474192474,
+    "classes": [
+        "crosswalk",
+        "noentry",
+        "priorityroad",
+        "roundabout",
+        "speedlimit",
+        "stop",
+        "trafficlight",
+        "yield"
+    ]
+}

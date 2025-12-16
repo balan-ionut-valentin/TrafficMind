@@ -55,6 +55,7 @@ def draw_rect(event, x, y, flags, param):
         bbox = (min(ix, x), min(iy, y), abs(ix - x), abs(iy - y))
 
 def main():
+    global bbox
     ensure_dirs()
     
     files = [f for f in os.listdir(INPUT_DIR) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
