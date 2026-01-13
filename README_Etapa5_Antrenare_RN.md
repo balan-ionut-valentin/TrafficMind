@@ -163,6 +163,28 @@ Includeți **TOATE** cerințele Nivel 1 + următoarele:
 
 ---
 
+## Comparare Arhitecturi (Bonus Nivel 3)
+
+Am testat două arhitecturi pentru a alege soluția optimă:
+
+| Arhitectură | Accuracy | Observații |
+|---|---|---|
+| **CNN Deep (3 blocuri)** | **93.75%** | Robustă, include Dropout și Augmentare. Generalizează mai bine pe date noi. |
+| CNN Shallow (1 bloc) | 95.08% | Foarte rapidă, dar predispusă la overfitting pe termen lung. Performanța ridicată se datorează setului mic de date. |
+
+**Justificare Alegere Finală:**
+Am ales **CNN Deep** deși are o acuratețe similară (dar ușor mai mică pe validare punctuală), deoarece arhitectura mai adâncă (32->64->64 filtre) combinată cu Augmentarea Datelor oferă o siguranță mai mare în condiții de iluminare variabilă din trafic, spre deosebire de modelul Shallow care memorează formele simple.
+
+## Benchmark Latență (Bonus Nivel 3)
+
+Modelul a fost convertit în format **TFLite** și testat pentru latență (100 iterații).
+- **Latență Medie:** `0.43 ms` (Mult sub limita de 50ms)
+- **Status:** SUCCES
+- **Fișier:** `models/model.tflite`
+
+
+---
+
 ## Verificare Consistență cu State Machine (Etapa 4)
 
 Antrenarea și inferența trebuie să respecte fluxul din State Machine-ul vostru definit în Etapa 4.
@@ -207,7 +229,9 @@ Cauză posibilă: Features-urile IMU (gyro_z) sunt simetrice pentru viraje în d
 
 **Completați pentru proiectul vostru:**
 ```
-Modelul confundă uneori semnele de limitare viteză cu cele de interzicere a circulației din cauza rezoluției mici a imaginilor.
+Modelul a obținut o performanță foarte bună (93.75%), dar prezintă confuzii pe clasele cu puține exemple.
+Specific, clasa 'priorityroad' are un recall de doar 50% (1 din 2 exemple ratat), fiind probabil confundată din cauza formei similare cu alte semne (romb/diamant).
+De asemenea, 'noentry' a fost ratat în 1 din 6 cazuri (recall 83%).
 ```
 
 ### 2. Ce caracteristici ale datelor cauzează erori?
@@ -220,7 +244,8 @@ Modelul eșuează când zgomotul de fond depășește 40% din amplitudinea semna
 
 **Completați pentru proiectul vostru:**
 ```
-Dimensiunea scalată a imaginilor sub 64x64 scade increderea modelului sub 70%
+Dezechilibrul claselor în setul de test (doar 1 exemplu 'roundabout', 2 'priorityroad') face ca metricile pe aceste clase să fie instabile.
+Rezoluția de 64x64 este suficientă pentru majoritatea semnelor, dar detaliile fine din semnele complexe pot fi pierdute.
 ```
 
 ### 3. Ce implicații are pentru aplicația industrială?
@@ -236,7 +261,8 @@ Soluție: Ajustare threshold clasificare de la 0.5 → 0.3 pentru clasa 'defect'
 
 **Completați pentru proiectul vostru:**
 ```
-Detectarea eronată a unui semafor cand nu se află niciun indicator în cadru este critică.
+Ratarea unui semn 'noentry' (Sens Interzis) este critică și inacceptabilă, putând duce la accidente grave.
+Ratarea 'priorityroad' este mai puțin gravă (șoferul ar trebui oricum să fie atent), dar afectează fluiditatea condusului autonom.
 ```
 
 ### 4. Ce măsuri corective propuneți?
@@ -252,9 +278,9 @@ Măsuri corective:
 
 **Completați pentru proiectul vostru:**
 ```
-1. **Augmentare Date**: Adăugarea de variații de luminozitate și zgomot în setul de antrenare pentru robustețe.
-2. **Early Stopping & Scheduler**: Implementate deja pentru a preveni overfitting-ul și a rafina ponderile.
-3. **Analiză Erori**: Monitorizarea continuă a matricii de confuzie și colectarea de date adiționale pentru clasele problematice.
+1. **Colectare date țintită**: Adăugarea urgentă a minim 50-100 imagini pentru clasele 'priorityroad' și 'roundabout' pentru a echilibra setul de date.
+2. **Augmentare specifică**: Continuarea folosirii augmentărilor de luminozitate/contrast implementate, dar cu accent pe păstrarea culorii roșii (critică pentru noentry/stop).
+3. **Analiză praguri**: Ajustarea pragului de decizie (threshold) mai jos pentru clasele critice ('stop', 'noentry') pentru a favoriza recall-ul în detrimentul preciziei.
 ```
 
 ---
@@ -409,14 +435,14 @@ python src/neural_network/camera_app.py
 ### Documentație Nivel 2 (dacă aplicabil)
 - [x] Early stopping implementat și documentat în cod
 - [x] Learning rate scheduler folosit (ReduceLROnPlateau / StepLR)
-- [ ] Augmentări relevante domeniu aplicate (NU rotații simple!)
+- [x] Augmentări relevante domeniu aplicate (NU rotații simple!)
 - [x] Grafic loss/val_loss salvat în `docs/loss_curve.png`
-- [ ] Analiză erori în context industrial completată (4 întrebări răspunse)
+- [x] Analiză erori în context industrial completată (4 întrebări răspunse)
 - [x] Metrici Nivel 2: **Accuracy ≥75%**, **F1 ≥0.70**
 
 ### Documentație Nivel 3 Bonus (dacă aplicabil)
-- [ ] Comparație 2+ arhitecturi (tabel comparativ + justificare)
-- [ ] Export ONNX/TFLite + benchmark latență (<50ms demonstrat)
+- [x] Comparație 2+ arhitecturi (tabel comparativ + justificare)
+- [x] Export ONNX/TFLite + benchmark latență (<50ms demonstrat)
 - [x] Confusion matrix + analiză 5 exemple greșite cu implicații (inclus în `evaluate.py`)
 
 ### Verificări Tehnice
@@ -427,12 +453,12 @@ python src/neural_network/camera_app.py
 - [x] Verificare anti-plagiat: toate punctele 1-5 respectate
 
 ### Verificare State Machine (Etapa 4)
-- [ ] Fluxul de inferență respectă stările din State Machine
+- [x] Fluxul de inferență respectă stările din State Machine
 - [x] Toate stările critice (PREPROCESS, INFERENCE, ALERT) folosesc model antrenat
-- [ ] UI reflectă State Machine-ul pentru utilizatorul final
+- [x] UI reflectă State Machine-ul pentru utilizatorul final
 
 ### Pre-Predare
-- [ ] `docs/etapa5_antrenare_model.md` completat cu TOATE secțiunile
+- [x] `docs/etapa5_antrenare_model.md` completat cu TOATE secțiunile
 - [x] Structură repository conformă: `docs/`, `results/`, `models/` actualizate
 - [x] Commit: `"Etapa 5 completă – Accuracy=X.XX, F1=X.XX"`
 - [x] Tag: `git tag -a v0.5-model-trained -m "Etapa 5 - Model antrenat"`
@@ -459,10 +485,10 @@ Asigurați-vă că următoarele fișiere există și sunt completate:
 Exemplu:
 ```json
 {
-  "test_accuracy": 0.7823,
-  "test_f1_macro": 0.7456,
-  "test_precision_macro": 0.7612,
-  "test_recall_macro": 0.7321
+  "test_accuracy": 0.9375,
+  "test_f1_macro": 0.9137,
+  "test_precision_macro": 0.9600,
+  "test_recall_macro": 0.9000
 }
 ```
 

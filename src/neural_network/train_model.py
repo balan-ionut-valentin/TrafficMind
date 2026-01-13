@@ -4,24 +4,35 @@ import tensorflow as tf
 from tensorflow.keras import layers, models
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, CSVLogger
 
-BASE_DIR = "../../data/processed"
+BASE_DIR = "data/processed"
 TRAIN_DIR = os.path.join(BASE_DIR, "train")
 VAL_DIR = os.path.join(BASE_DIR, "validation")
-MODEL_SAVE_PATH = "../../models/trained_model.h5"
-RESULTS_DIR = "../../results"
-DOCS_DIR = "../../docs"
+MODEL_SAVE_PATH = "models/trained_model.h5"
+RESULTS_DIR = "results"
+DOCS_DIR = "docs"
 
 os.makedirs(RESULTS_DIR, exist_ok=True)
 os.makedirs(DOCS_DIR, exist_ok=True)
-os.makedirs("../../models", exist_ok=True)
+os.makedirs("models", exist_ok=True)
 os.makedirs(RESULTS_DIR, exist_ok=True)
 os.makedirs(DOCS_DIR, exist_ok=True)
-os.makedirs("../../models", exist_ok=True)
+os.makedirs("models", exist_ok=True)
 
 # Parametrii Rețelei
 IMG_SIZE = (64, 64)
 BATCH_SIZE = 32
 EPOCHS = 50 
+
+
+def get_data_augmentation():
+    """Definire straturi de augmentare"""
+    data_augmentation = tf.keras.Sequential([
+        layers.RandomRotation(0.05),
+        layers.RandomZoom(0.1),
+        layers.RandomContrast(0.1),
+        layers.RandomBrightness(0.1),
+    ])
+    return data_augmentation
 
 def load_datasets():
     """Încarcă datele direct din foldere folosind Keras."""
@@ -43,6 +54,14 @@ def load_datasets():
     
     class_names = train_ds.class_names
     
+    # Definire augmentare
+    data_augmentation = get_data_augmentation()
+    
+    # Aplicare augmentare pe setul de antrenare
+    # Folosim lambda pentru a aplica doar pe imagini (x), lăsând etichetele (y) neschimbate
+    train_ds = train_ds.map(lambda x, y: (data_augmentation(x, training=True), y), 
+                            num_parallel_calls=tf.data.AUTOTUNE)
+    
     train_ds = train_ds.cache().shuffle(1000).prefetch(buffer_size=tf.data.AUTOTUNE)
     val_ds = val_ds.cache().prefetch(buffer_size=tf.data.AUTOTUNE)
     
@@ -51,7 +70,7 @@ def load_datasets():
 def build_cnn_model(num_classes):
     """Construiește arhitectura CNN."""
     model = models.Sequential([
-        # Strat de normalizare 
+        # Strat de normalizare (Augmentarea e acum in dataset)
         layers.Rescaling(1./255, input_shape=(64, 64, 3)),
         
         # Bloc 1 Convoluțional
@@ -134,7 +153,21 @@ if __name__ == "__main__":
         callbacks=callbacks
     )
     
-    model.save(MODEL_SAVE_PATH)
-    print(f"\nModel salvat cu succes în '{MODEL_SAVE_PATH}'")
+    # Stergem fisierul vechi daca exista pentru a evita conflicte de permisiuni rare
+    if os.path.exists(MODEL_SAVE_PATH):
+        try:
+            os.remove(MODEL_SAVE_PATH)
+        except:
+            pass
+            
+    try:
+        model.save(MODEL_SAVE_PATH)
+        print(f"\nModel salvat cu succes în '{MODEL_SAVE_PATH}'")
+    except Exception as e:
+        print(f"\nEROARE la salvarea .h5: {e}")
+        print("Incercare salvare in format .keras (formatul modern)...")
+        NEW_PATH = MODEL_SAVE_PATH.replace('.h5', '.keras')
+        model.save(NEW_PATH)
+        print(f"Model salvat în '{NEW_PATH}'. Actualizeaza scripturile de inferenta!")
     
     plot_history(history)

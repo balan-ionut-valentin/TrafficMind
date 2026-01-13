@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 from shutil import copyfile
 import numpy as np
 
-BASE_DIR = "../../data"
+BASE_DIR = "data"
 RAW_IMAGES = os.path.join(BASE_DIR, "raw/images")
 RAW_ANNOTATIONS = os.path.join(BASE_DIR, "raw/annotations")
 OUTPUT_DIR = os.path.join(BASE_DIR, "processed")

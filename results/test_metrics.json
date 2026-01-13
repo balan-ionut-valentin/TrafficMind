@@ -1,6 +1,6 @@
 {
-    "test_accuracy": 0.953125,
-    "test_f1_macro": 0.9224192474192474,
+    "test_accuracy": 0.9375,
+    "test_f1_macro": 0.9136616161616162,
     "classes": [
         "crosswalk",
         "noentry",

@@ -6,11 +6,11 @@ import seaborn as sns
 import tensorflow as tf
 from sklearn.metrics import classification_report, confusion_matrix, f1_score, accuracy_score
 
-BASE_DIR = "../../data/processed"
+BASE_DIR = "data/processed"
 TEST_DIR = os.path.join(BASE_DIR, "test")
-MODEL_PATH = "../../models/trained_model.h5"
-RESULTS_DIR = "../../results"
-DOCS_DIR = "../../docs"
+MODEL_PATH = "models/trained_model.h5"
+RESULTS_DIR = "results"
+DOCS_DIR = "docs"
 IMG_SIZE = (64, 64)
 BATCH_SIZE = 32
 

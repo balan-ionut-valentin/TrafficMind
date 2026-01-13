@@ -4,9 +4,9 @@ from sklearn.model_selection import train_test_split
 import glob
 
 # Calea unde a salvat capture.py
-SOURCE_DIR = "../../data/generated"
+SOURCE_DIR = "data/generated"
 # Calea unde antreneaza train_model.py
-DEST_DIR = "../../data/processed"
+DEST_DIR = "data/processed"
 
 def merge():
     if not os.path.exists(SOURCE_DIR):

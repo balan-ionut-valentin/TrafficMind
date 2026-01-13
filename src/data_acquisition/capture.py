@@ -4,9 +4,9 @@ import time
 import uuid
 import shutil
 
-INPUT_DIR = "../../data/raw/phone_uploads"
-OUTPUT_DIR = "../../data/generated"
-PROCESSED_DIR = "../../data/raw/phone_uploads/done"
+INPUT_DIR = "data/raw/phone_uploads"
+OUTPUT_DIR = "data/generated"
+PROCESSED_DIR = "data/raw/phone_uploads/done"
 IMG_SIZE = (64, 64)
 
 CLASSES = {

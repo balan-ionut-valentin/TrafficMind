@@ -3,7 +3,7 @@ import numpy as np
 import tensorflow as tf
 import os
 
-MODEL_PATH = "../../models/trained_model.h5"
+MODEL_PATH = "models/trained_model.h5"
 IMG_SIZE = (64, 64)
 
 # Lista în ordinea alfabetică a claselor

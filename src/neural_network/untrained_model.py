@@ -2,7 +2,7 @@ import os
 import tensorflow as tf
 from tensorflow.keras import layers, models
 
-MODEL_SAVE_PATH = "../../models/untrained_model.h5"
+MODEL_SAVE_PATH = "models/untrained_model.h5"
 
 def build_cnn_model(num_classes=8):
     model = models.Sequential([
