@@ -1,0 +1,40 @@
+stateDiagram-v2
+    [*] --> INIT: Start App
+    INIT --> PROCESSING_LOOP: Model Loaded & Camera Ready
+
+    state "Main Processing Loop" as PROCESSING_LOOP {
+        direction LR
+        CAPTURE_FRAME --> PREPROCESS: Read Frame
+        PREPROCESS --> INFERENCE: Resize & Normalize
+        INFERENCE --> CHECK_CONFIDENCE: Predict
+
+        state confidence_check <<choice>>
+        CHECK_CONFIDENCE --> confidence_check: Confidence >= 0.60?
+
+        confidence_check --> STATE_UNCERTAIN: No (< 60%)
+        confidence_check --> CHECK_CLASS: Yes (>= 60%)
+
+        state class_check <<choice>>
+        CHECK_CLASS --> class_check: Is Sign Critical?
+
+        class_check --> STATE_ALERT: Yes
+        class_check --> STATE_NORMAL: No
+
+        state STATE_UNCERTAIN {
+            note: "Yellow UI\nLabel: Uncertain"
+        }
+        state STATE_ALERT {
+            note: "Red UI\nSigns: Stop, Yield, NoEntry, TrafficLight"
+        }
+        state STATE_NORMAL {
+            note: "Green UI\nSigns: Speedlimit, Crosswalk, etc."
+        }
+        
+        STATE_UNCERTAIN --> DRAW_UI
+        STATE_ALERT --> DRAW_UI
+        STATE_NORMAL --> DRAW_UI
+        
+        DRAW_UI --> CAPTURE_FRAME: Show & Next
+    }
+
+    PROCESSING_LOOP --> [*]: 'q' Pressed

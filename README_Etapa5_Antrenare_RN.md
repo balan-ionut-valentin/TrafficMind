@@ -3,7 +3,7 @@
 **Disciplina:** Rețele Neuronale  
 **Instituție:** POLITEHNICA București – FIIR  
 **Student:** Bălan Ionuț-Valentin
-**Link Repository GitHub** https://github.com/AndreiPopescu/TrafficMind
+**Link Repository GitHub** https://github.com/balan-ionut-valentin/TrafficMind
 **Data:** 16.12.2025  
 
 ---

@@ -1,0 +1,25 @@
+{
+    "model": "optimized_model.h5",
+    "test_accuracy": 0.953125,
+    "test_f1_macro": 0.9233662171162171,
+    "test_precision_macro": 0.9543650793650793,
+    "test_recall_macro": 0.9182692307692308,
+    "false_negative_rate": 0.0817307659578404,
+    "false_positive_rate": 0.006933390936709413,
+    "inference_latency_ms": 51.2,
+    "improvement_vs_baseline": {
+        "accuracy": "+32.4%",
+        "f1_score": "+35.8%",
+        "latency": "+7%"
+    },
+    "classes": [
+        "crosswalk",
+        "noentry",
+        "priorityroad",
+        "roundabout",
+        "speedlimit",
+        "stop",
+        "trafficlight",
+        "yield"
+    ]
+}
