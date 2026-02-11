@@ -6,8 +6,8 @@ import argparse
 import time
 
 # Configuration
-DEFAULT_MODEL_PATH = "models/optimized_model.h5"
-FALLBACK_MODEL_PATH = "models/trained_model.h5"
+DEFAULT_MODEL_PATH = "../../models/optimized_model.h5"
+FALLBACK_MODEL_PATH = "../../models/trained_model.h5"
 IMG_SIZE = (64, 64)
 
 # Classes in alphabetical order (must match training)

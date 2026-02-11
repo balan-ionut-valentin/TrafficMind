@@ -1,4 +1,6 @@
 import os
+# Suppress oneDNN logs
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 import argparse
 import matplotlib.pyplot as plt
 import tensorflow as tf
@@ -129,9 +131,9 @@ def plot_history(history, experiment_name):
     print(f"Graficele au fost salvate ca '{save_path}'")
     plt.close()
 
-def train(batch_size, epochs, learning_rate, dropout, dense_units, experiment_name):
+def train(batch_size, epochs, learning_rate, dropout, dense_units, experiment_name, early_stopping=False):
     print(f"--- Starting Experiment: {experiment_name} ---")
-    print(f"Params: Batch={batch_size}, Epochs={epochs}, LR={learning_rate}, Dropout={dropout}, Dense={dense_units}")
+    print(f"Params: Batch={batch_size}, Epochs={epochs}, LR={learning_rate}, Dropout={dropout}, Dense={dense_units}, EarlyStopping={early_stopping}")
 
     # 1. Load Data
     train_ds, val_ds, class_names = load_datasets(batch_size)
@@ -147,10 +149,12 @@ def train(batch_size, epochs, learning_rate, dropout, dense_units, experiment_na
     history_file = os.path.join(RESULTS_DIR, f'history_{experiment_name}.csv')
     
     callbacks = [
-        EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True, verbose=1),
         ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=3, min_lr=0.00001, verbose=1),
         CSVLogger(history_file)
     ]
+    
+    if early_stopping:
+        callbacks.append(EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True, verbose=1))
 
     # 4. Train
     print("Începe antrenarea...")
@@ -185,13 +189,14 @@ def train(batch_size, epochs, learning_rate, dropout, dense_units, experiment_na
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Antrenare Retea Neuronala TrafficMind")
-    parser.add_argument('--batch', type=int, default=32, help='Batch size')
+    parser.add_argument('--batch', '--batch_size', dest='batch', type=int, default=32, help='Batch size')
     parser.add_argument('--epochs', type=int, default=50, help='Numar epoci')
     parser.add_argument('--lr', type=float, default=0.001, help='Learning Rate')
     parser.add_argument('--dropout', type=float, default=0.5, help='Dropout rate')
     parser.add_argument('--dense', type=int, default=64, help='Numar neuroni in stratul dens')
     parser.add_argument('--name', type=str, default='trained', help='Nume experiment (pentru fisiere output)')
+    parser.add_argument('--early_stopping', action='store_true', help='Activeaza Early Stopping')
     
     args = parser.parse_args()
     
-    train(args.batch, args.epochs, args.lr, args.dropout, args.dense, args.name)
+    train(args.batch, args.epochs, args.lr, args.dropout, args.dense, args.name, args.early_stopping)

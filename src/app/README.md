@@ -14,7 +14,7 @@ Aplicația utilizează fluxul video de la camera web, detectează ROI (Region of
 Pentru a porni aplicația, rulați următoarea comandă din rădăcina proiectului:
 
 ```bash
-python src/neural_network/camera_app.py
+python src/app/main.py
 ```
 
 ### Cerințe
@@ -28,11 +28,11 @@ Pentru a porni aplicația, rulați următoarea comandă din rădăcina proiectul
 
 ```bash
 python src/preprocessing/process_data.py
-python src/data_acquisition/camera.py
+python src/data_acquisition/capture.py
 python src/preprocessing/merge_data.py
 python src/neural_network/train_model.py --epochs 50 --batch_size 32 --early_stopping
 python src/neural_network/evaluate.py --model models/trained_model.h5
-python src/neural_network/camera_app.py
+python src/app/main.py
 ```
 
 ## Funcționalități
